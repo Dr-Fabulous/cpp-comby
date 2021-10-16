@@ -20,17 +20,25 @@ project(cpp-comby
 	VERSION "${_TAG}")
 
 include(FetchContent)
-FetchContent_Declare(cpp_result
-		     GIT_REPOSITORY "https://github.com/Dr-Fabulous/cpp-result.git"
+FetchContent_Declare(cpp_tag_invoke
+		     GIT_REPOSITORY "https://github.com/Dr-Fabulous/cpp-tag-invoke.git"
 		     GIT_TAG main)
 
-FetchContent_MakeAvailable(cpp_result)
+FetchContent_MakeAvailable(cpp_tag_invoke)
 
-if(NOT cpp_result_POPULATED)
-	message(FATAL_ERROR "failed to populate cpp-result")
+if(NOT cpp_tag_invoke_POPULATED)
+	message(FATAL_ERROR "failed to populate cpp-tag-invoke")
 endif()
 
-add_subdirectory(src)
+if("^${CMAKE_SOURCE_DIR}$" STREQUAL "^${PROJECT_SOURCE_DIR}$")
+	set(IS_MAIN_PROJECT ON)
+	message(STATUS "adding ${PROJECT_NAME} v${_TAG}")
+else()
+	set(IS_MAIN_PROJECT OFF)
+	message(STATUS "adding ${PROJECT_NAME} v${_TAG} as a subproject")
+endif()
+
+add_subdirectory(comby)
 
 include(CTest)
-add_subdirectory(test)
+add_subdirectory(test EXCLUDE_FROM_ALL)
