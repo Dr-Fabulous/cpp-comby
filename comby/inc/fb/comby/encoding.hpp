@@ -42,6 +42,10 @@ namespace fb::comby::encoding {
 		}
 	};
 
+	/*
+		when implementing an algorithm using an encoding, it is assumed that there is enough
+		storage space for dst unit or code types.
+	*/
 	template <typename E>
 	concept encoding = requires() {
 		typename unit_t<E>;
@@ -60,6 +64,22 @@ namespace fb::comby::encoding {
 			{E::decode(state, units, codes)} -> concepts::same_as<decode_result<E>>;
 		};
 	};
+
+	constexpr bool is_ascii(char32_t const cp) noexcept {
+		return cp < 0x80u;
+	}
+
+	constexpr bool is_unicode_surrogate(char32_t const cp) noexcept {
+		return cp > 0xD7FFu && cp < 0xE000u;
+	}
+
+	constexpr bool is_unicode_bmp(char32_t const cp) noexcept {
+		return !is_unicode_surrogate(cp) && cp < 0x10000u;
+	}
+
+	constexpr bool is_unicode_scalar(char32_t const cp) noexcept {
+		return !is_unicode_surrogate(cp) && cp < 0x110000u;
+	}
 }
 
 #endif
